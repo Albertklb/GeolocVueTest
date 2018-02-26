@@ -25,8 +25,10 @@
       <div class="row">
         <div class="input-field col s6 ">
             <p>Nom du magasin : </p>
-          <input placeholder="Nom du magasin" id="magasin" type="text" class="validate">
+          <input placeholder="Nom du magasin" id="magasin" type="text" class="validate" v-model="mag">
         </div>
+        <div v-bind='res'>{{res}}</div>
+        <button type="submit" @click="f">Envoyez</button>
       </div>
       </div>
 
@@ -35,40 +37,69 @@
 </template>
 
 <script>
+import * as VueGoogleMaps from "vue2-google-maps";
 
-import * as VueGoogleMaps from 'vue2-google-maps'
 
-var googleMapsClient = require('@google/maps').createClient({
-  key: 'AIzaSyAM3jmpomtVXxPskyOSDZ9k7rr_CEo_Jvc'
+const geolocation = require("google-geolocation")({
+  key: "AIzaSyAM3jmpomtVXxPskyOSDZ9k7rr_CEo_Jvc",
+  timeout: 2000
 });
 
-googleMapsClient.geocode({
-  address: 'pizzeria paris',
-  region : 'fr',
-  language : 'fr',
-}, function(err, response) {
-  if (!err) {
-    console.log(response.json.results);
-  }
-  
+const params = {
+  wifiAccessPoints: [
+    {
+      macAddress: "01:23:45:67:89:AB",
+      signalStrength: -65,
+      signalToNoiseRatio: 40
+    }
+  ]
+};
+
+var googleMapsClient = require("@google/maps").createClient({
+  key: "AIzaSyAM3jmpomtVXxPskyOSDZ9k7rr_CEo_Jvc"
 });
 
 
-  export default {
-      name : "mapg",
-    data () {
-      return {
-        styles: [ ]
-      }
+
+export default {
+
+  data : {
+    name: "mapg",
+    mag: "test",
+    res : ''
+  },
+
+  methods: {
+    f: function() {
+      console.log(this.mag);
+      googleMapsClient.geocode(
+        {
+          address: this.mag,
+          region: "fr",
+          language: "fr"
+        },
+        function(err, response) {
+          if (!err) {
+
+            console.log(response.json.results);
+            console.log(response.json.results[0].formatted_address);
+            // console.log(response.json.results.geocode);
+
+            //ici les deux lignes en dessous n affiche rien
+            this.res = response.json.results[0].formatted_address
+
+          }
+        } 
+      );
     }
   }
-
+};
 </script>
 
 <style>
-  .map-container {
-    width: 800px;
-    height: 400px;
-  }
+.map-container {
+  width: 45vw;
+  height: 50vh;
+}
 </style>
 
