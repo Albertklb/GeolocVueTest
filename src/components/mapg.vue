@@ -27,7 +27,7 @@
             <p>Nom du magasin : </p>
           <input placeholder="Nom du magasin" id="magasin" type="text" class="validate" v-model="mag">
         </div>
-        <div v-bind='res'>{{res}}</div>
+        <div>{{res}}</div>
         <button type="submit" @click="f">Envoyez</button>
       </div>
       </div>
@@ -44,6 +44,10 @@ const geolocation = require("google-geolocation")({
   key: "AIzaSyAM3jmpomtVXxPskyOSDZ9k7rr_CEo_Jvc",
   timeout: 2000
 });
+
+
+
+
 
 const params = {
   wifiAccessPoints: [
@@ -63,10 +67,17 @@ var googleMapsClient = require("@google/maps").createClient({
 
 export default {
 
-  data : {
+  data() {
+    return {
     name: "mapg",
     mag: "test",
-    res : ''
+    res: '',
+    position : {
+      lat:'1',
+      lng:'1',
+    }
+    
+    }
   },
 
   methods: {
@@ -78,7 +89,7 @@ export default {
           region: "fr",
           language: "fr"
         },
-        function(err, response) {
+        (err, response)=> {
           if (!err) {
 
             console.log(response.json.results);
@@ -91,8 +102,31 @@ export default {
           }
         } 
       );
-    }
-  }
+    },
+
+
+
+    g: function () {
+      navigator.geolocation.getCurrentPosition((position)=> {
+        // do_something(position.coords.latitude, position.coords.longitude);
+      this.lat = position.coords.latitude
+      this.long = position.coords.longitude
+      console.log( "Affichage de la latitude et longitude de g() " + this.lat + " - " + this.long )
+      this.position.lat = 1
+      this.position.lng = 1
+});
+      
+    },
+
+
+  },
+
+  mounted : function() {
+      this.$nextTick( this.g)
+    
+  },
+
+
 };
 </script>
 
